@@ -25,7 +25,9 @@ import {
   AffiliateDisclosure, 
   About, 
   Contact,
-  ComparePage 
+  ComparePage,
+  PrivacyPolicy,
+  TermsOfService
 } from "@/pages/static-pages";
 import AdminDashboard from "@/pages/admin";
 import AdminLogin from "@/pages/admin/login";
@@ -61,6 +63,8 @@ function Router() {
       <Route path="/affiliate-disclosure" component={AffiliateDisclosure} />
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />
+      <Route path="/privacy" component={PrivacyPolicy} />
+      <Route path="/terms" component={TermsOfService} />
       
       <Route component={NotFound} />
     </Switch>
