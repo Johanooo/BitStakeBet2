@@ -153,6 +153,18 @@ export default function BookmakerDetail() {
                       {kycInfo.label}
                     </Badge>
                   </div>
+
+                  <a 
+                    href={bookmaker.affiliateUrl || "#"} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="block mt-4 lg:hidden"
+                  >
+                    <Button className="w-full sm:w-auto gap-2" size="lg" data-testid="button-visit-site-mobile">
+                      Visit {bookmaker.name}
+                      <ExternalLink className="h-4 w-4" />
+                    </Button>
+                  </a>
                 </div>
 
                 <div className="flex flex-col items-center gap-2">
