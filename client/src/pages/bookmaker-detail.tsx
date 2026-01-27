@@ -154,17 +154,15 @@ export default function BookmakerDetail() {
                     </Badge>
                   </div>
 
-                  <a 
-                    href={bookmaker.affiliateUrl || "#"} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="block mt-4"
+                  <Button 
+                    className="w-full sm:w-auto gap-2 mt-4" 
+                    size="lg" 
+                    data-testid="button-visit-site-mobile"
+                    onClick={() => window.open(bookmaker.affiliateUrl || `https://${bookmaker.domain}`, '_blank')}
                   >
-                    <Button className="w-full sm:w-auto gap-2" size="lg" data-testid="button-visit-site-mobile">
-                      Visit {bookmaker.name}
-                      <ExternalLink className="h-4 w-4" />
-                    </Button>
-                  </a>
+                    Visit {bookmaker.name}
+                    <ExternalLink className="h-4 w-4" />
+                  </Button>
                 </div>
 
                 <div className="flex flex-col items-center gap-2">
@@ -339,17 +337,15 @@ export default function BookmakerDetail() {
           <Card className="sticky top-24">
             <CardContent className="p-6">
               <div className="space-y-4">
-                <a 
-                  href={bookmaker.affiliateUrl || "#"} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="block"
+                <Button 
+                  className="w-full gap-2" 
+                  size="lg" 
+                  data-testid="button-visit-site"
+                  onClick={() => window.open(bookmaker.affiliateUrl || `https://${bookmaker.domain}`, '_blank')}
                 >
-                  <Button className="w-full gap-2" size="lg" data-testid="button-visit-site">
-                    Visit {bookmaker.name}
-                    <ExternalLink className="h-4 w-4" />
-                  </Button>
-                </a>
+                  Visit {bookmaker.name}
+                  <ExternalLink className="h-4 w-4" />
+                </Button>
 
                 {bookmaker.refCode && (
                   <div className="p-3 rounded-lg bg-primary/5 border border-primary/10">
