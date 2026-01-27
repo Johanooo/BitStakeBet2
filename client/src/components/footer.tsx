@@ -11,7 +11,7 @@ export function Footer() {
               <img 
                 src="/logos/bitstakebet-logo.png" 
                 alt="BitStakeBet" 
-                className="h-12 w-auto object-contain"
+                className="h-16 w-auto object-contain max-w-[240px]"
               />
             </div>
             <p className="text-sm text-muted-foreground">

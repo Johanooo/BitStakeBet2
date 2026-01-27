@@ -25,12 +25,12 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4">
-        <nav className="flex h-14 items-center justify-between gap-2">
+        <nav className="flex h-16 items-center justify-between gap-2">
           <Link href="/" className="flex items-center group" data-testid="link-home">
             <img 
               src="/logos/bitstakebet-logo.png" 
               alt="BitStakeBet" 
-              className="h-10 sm:h-12 w-auto object-contain"
+              className="h-14 w-auto object-contain max-w-[200px] sm:max-w-[280px]"
             />
           </Link>
 
