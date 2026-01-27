@@ -63,25 +63,14 @@ function Router() {
   );
 }
 
-function AdminRouter() {
-  return (
-    <Switch>
-      <Route path="/admin" component={AdminDashboard} />
-      <Route path="/admin/login" component={AdminLogin} />
-      <Route component={NotFound} />
-    </Switch>
-  );
-}
-
 function App() {
   return (
     <ThemeProvider defaultTheme="dark">
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <Switch>
-            <Route path="/admin">
-              {() => <AdminRouter />}
-            </Route>
+            <Route path="/admin/login" component={AdminLogin} />
+            <Route path="/admin" component={AdminDashboard} />
             <Route>
               {() => (
                 <Layout>

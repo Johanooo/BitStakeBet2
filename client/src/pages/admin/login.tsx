@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAdminAuth } from "@/hooks/use-admin-auth";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,12 @@ export default function AdminLogin() {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      setLocation("/admin");
+    }
+  }, [isLoading, isAuthenticated, setLocation]);
+  
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -26,7 +32,6 @@ export default function AdminLogin() {
   }
 
   if (isAuthenticated) {
-    setLocation("/admin");
     return null;
   }
 

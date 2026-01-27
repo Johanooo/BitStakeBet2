@@ -13,11 +13,16 @@ import {
   countAdminUsers,
   getAdminByUsername
 } from "./admin-auth";
+import { getSession } from "./replit_integrations/auth";
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  // Setup session middleware for admin auth
+  app.set("trust proxy", 1);
+  app.use(getSession());
+  
   // Admin Authentication Routes
   
   // Login
