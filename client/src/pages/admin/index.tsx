@@ -110,10 +110,11 @@ export default function AdminDashboard() {
           <div className="flex items-center gap-4">
             <Link href="/">
               <div className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-                <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-                  <span className="text-primary-foreground font-bold text-sm">CB</span>
-                </div>
-                <span className="font-bold hidden sm:block">CryptoBookies</span>
+                <img 
+                  src="/logos/bitstakebet-logo.png" 
+                  alt="BitStakeBet" 
+                  className="h-8 w-auto object-contain"
+                />
               </div>
             </Link>
             <Badge variant="outline">Admin Panel</Badge>

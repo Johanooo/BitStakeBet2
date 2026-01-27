@@ -1,8 +1,8 @@
-# CryptoBookies
+# BitStakeBet
 
 ## Overview
 
-CryptoBookies is a production-grade crypto betting comparison website designed to rank for crypto betting keywords and serve as a trusted crypto bookmaker comparison platform. The site compares crypto betting sites (sportsbooks and casinos) by trust scores, bonuses, KYC requirements, supported coins, payout speed, and regional eligibility.
+BitStakeBet (bitstakebet.com) is a production-grade crypto betting comparison website designed to rank for crypto betting keywords and serve as a trusted crypto bookmaker comparison platform. The site compares crypto betting sites (sportsbooks and casinos) by trust scores, bonuses, KYC requirements, supported coins, payout speed, and regional eligibility.
 
 The application follows a full-stack architecture with React frontend, Express backend, and PostgreSQL database.
 

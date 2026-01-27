@@ -687,7 +687,7 @@ KYC is a verification process where betting sites confirm your identity using do
 
 ## How to Verify a Site
 
-1. Check our trust ratings at CryptoBookies
+1. Check our trust ratings at BitStakeBet
 2. Search for user experiences on forums
 3. Verify the gambling license is valid
 4. Test customer support before depositing

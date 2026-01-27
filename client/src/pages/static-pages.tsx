@@ -147,12 +147,12 @@ export function AffiliateDisclosure() {
       
       <div className="prose prose-neutral dark:prose-invert max-w-none">
         <p className="text-lg">
-          Transparency is important to us. This page explains how CryptoBookies is funded.
+          Transparency is important to us. This page explains how BitStakeBet is funded.
         </p>
 
         <h2>How We Make Money</h2>
         <p>
-          CryptoBookies contains affiliate links. When you click on these links and sign up at a 
+          BitStakeBet contains affiliate links. When you click on these links and sign up at a 
           crypto betting site, we may receive a commission at no additional cost to you.
         </p>
 
@@ -186,11 +186,11 @@ export function AffiliateDisclosure() {
 export function About() {
   return (
     <div className="container mx-auto px-4 py-8 sm:py-12 max-w-4xl">
-      <h1 className="text-3xl sm:text-4xl font-bold mb-6">About CryptoBookies</h1>
+      <h1 className="text-3xl sm:text-4xl font-bold mb-6">About BitStakeBet</h1>
       
       <div className="prose prose-neutral dark:prose-invert max-w-none">
         <p className="text-lg">
-          CryptoBookies is the most trusted resource for finding safe, reliable crypto betting sites.
+          BitStakeBet is the most trusted resource for finding safe, reliable crypto betting sites.
         </p>
 
         <h2>Our Mission</h2>

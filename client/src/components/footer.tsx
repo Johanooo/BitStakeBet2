@@ -8,10 +8,11 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold">CB</span>
-              </div>
-              <span className="font-bold text-lg">CryptoBookies</span>
+              <img 
+                src="/logos/bitstakebet-logo.png" 
+                alt="BitStakeBet" 
+                className="h-10 w-auto object-contain"
+              />
             </div>
             <p className="text-sm text-muted-foreground">
               The most trusted crypto betting comparison site. We help you find safe, 
@@ -121,7 +122,7 @@ export function Footer() {
           </div>
 
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-            <p>&copy; {new Date().getFullYear()} CryptoBookies. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} BitStakeBet. All rights reserved.</p>
             <div className="flex items-center gap-4">
               <Link href="/privacy" className="hover:text-foreground transition-colors">
                 Privacy Policy

@@ -27,12 +27,11 @@ export function Header() {
       <div className="container mx-auto px-4">
         <nav className="flex h-16 items-center justify-between gap-4">
           <Link href="/" className="flex items-center gap-2 group" data-testid="link-home">
-            <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-lg">CB</span>
-            </div>
-            <span className="font-bold text-xl hidden sm:block group-hover:text-primary transition-colors">
-              CryptoBookies
-            </span>
+            <img 
+              src="/logos/bitstakebet-logo.png" 
+              alt="BitStakeBet" 
+              className="h-10 w-auto object-contain"
+            />
           </Link>
 
           <div className="hidden lg:flex items-center gap-1">
