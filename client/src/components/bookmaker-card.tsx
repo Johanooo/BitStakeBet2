@@ -56,7 +56,7 @@ export function BookmakerCard({ bookmaker, bonus, rank, className }: BookmakerCa
           )}
           
           <div className="flex items-start gap-4 flex-1">
-            <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-xl bg-muted flex items-center justify-center flex-shrink-0 overflow-hidden border border-border/50">
+            <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-xl bg-white flex items-center justify-center flex-shrink-0 overflow-hidden border border-border/50">
               {logoUrl ? (
                 <img 
                   src={logoUrl} 

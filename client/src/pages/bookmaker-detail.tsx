@@ -113,7 +113,7 @@ export default function BookmakerDetail() {
           <Card>
             <CardContent className="p-6 sm:p-8">
               <div className="flex flex-col sm:flex-row gap-6">
-                <div className="h-24 w-24 sm:h-32 sm:w-32 rounded-2xl bg-muted flex items-center justify-center flex-shrink-0 overflow-hidden border border-border/50">
+                <div className="h-24 w-24 sm:h-32 sm:w-32 rounded-2xl bg-white flex items-center justify-center flex-shrink-0 overflow-hidden border border-border/50">
                   {logoUrl ? (
                     <img 
                       src={logoUrl} 
