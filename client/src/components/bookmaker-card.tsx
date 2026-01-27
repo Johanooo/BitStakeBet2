@@ -4,6 +4,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TrustScoreBadge } from "@/components/trust-score-badge";
+import { getBookmakerLogo } from "@/lib/bookmaker-logos";
 import type { Bookmaker, Bonus } from "@shared/schema";
 import { cn } from "@/lib/utils";
 
@@ -42,6 +43,7 @@ export function calculateTrustScore(bookmaker: Bookmaker): number {
 export function BookmakerCard({ bookmaker, bonus, rank, className }: BookmakerCardProps) {
   const trustScore = calculateTrustScore(bookmaker);
   const kyc = getKycLabel(bookmaker.kycLevel);
+  const logoUrl = getBookmakerLogo(bookmaker.slug) || bookmaker.logoPath;
 
   return (
     <Card className={cn("group overflow-visible hover-elevate transition-all duration-300", className)}>
@@ -55,9 +57,9 @@ export function BookmakerCard({ bookmaker, bonus, rank, className }: BookmakerCa
           
           <div className="flex items-start gap-4 flex-1">
             <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-xl bg-muted flex items-center justify-center flex-shrink-0 overflow-hidden border border-border/50">
-              {bookmaker.logoPath ? (
+              {logoUrl ? (
                 <img 
-                  src={bookmaker.logoPath} 
+                  src={logoUrl} 
                   alt={bookmaker.name} 
                   className="h-full w-full object-contain p-2"
                 />

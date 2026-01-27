@@ -14,6 +14,7 @@ import { TrustScoreBadge, TrustScoreCircle, getTrustScoreInfo } from "@/componen
 import { BonusCard } from "@/components/bonus-card";
 import { FaqSection } from "@/components/faq-section";
 import { calculateTrustScore } from "@/components/bookmaker-card";
+import { getBookmakerLogo } from "@/lib/bookmaker-logos";
 import type { BookmakerWithRelations, Bonus, Faq } from "@shared/schema";
 import { useState } from "react";
 import { SiBitcoin, SiEthereum, SiTether, SiDogecoin, SiLitecoin } from "react-icons/si";
@@ -88,6 +89,7 @@ export default function BookmakerDetail() {
   const trustScore = calculateTrustScore(bookmaker);
   const trustInfo = getTrustScoreInfo(trustScore);
   const kycInfo = getKycBadge(bookmaker.kycLevel);
+  const logoUrl = getBookmakerLogo(bookmaker.slug) || bookmaker.logoPath;
 
   const copyAffiliateLink = () => {
     if (bookmaker.affiliateUrl) {
@@ -112,9 +114,9 @@ export default function BookmakerDetail() {
             <CardContent className="p-6 sm:p-8">
               <div className="flex flex-col sm:flex-row gap-6">
                 <div className="h-24 w-24 sm:h-32 sm:w-32 rounded-2xl bg-muted flex items-center justify-center flex-shrink-0 overflow-hidden border border-border/50">
-                  {bookmaker.logoPath ? (
+                  {logoUrl ? (
                     <img 
-                      src={bookmaker.logoPath} 
+                      src={logoUrl} 
                       alt={bookmaker.name} 
                       className="h-full w-full object-contain p-3"
                     />
