@@ -3,6 +3,7 @@ import { ExternalLink, Tag, Clock, AlertCircle, CheckCircle2, Copy, Check } from
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { getBookmakerLogo } from "@/lib/bookmaker-logos";
 import type { Bonus, Bookmaker } from "@shared/schema";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -48,10 +49,10 @@ export function BonusCard({ bonus, className }: BonusCardProps) {
       <CardContent className="p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row gap-4">
           {bonus.bookmaker && (
-            <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-xl bg-muted flex items-center justify-center flex-shrink-0 overflow-hidden border border-border/50">
-              {bonus.bookmaker.logoPath ? (
+            <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-xl bg-white flex items-center justify-center flex-shrink-0 overflow-hidden border border-border/50">
+              {(getBookmakerLogo(bonus.bookmaker.slug) || bonus.bookmaker.logoPath) ? (
                 <img 
-                  src={bonus.bookmaker.logoPath} 
+                  src={getBookmakerLogo(bonus.bookmaker.slug) || bonus.bookmaker.logoPath || ""} 
                   alt={bonus.bookmaker.name} 
                   className="h-full w-full object-contain p-2"
                 />
