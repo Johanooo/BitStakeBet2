@@ -150,8 +150,8 @@ export function BookmakerCard({ bookmaker, bonus, rank, className }: BookmakerCa
         )}
       </CardContent>
 
-      <CardFooter className="px-4 sm:px-6 pb-4 sm:pb-6 pt-0 gap-3">
-        <Link href={`/bookmakers/${bookmaker.slug}`} className="flex-1">
+      <CardFooter className="px-4 sm:px-6 pb-4 sm:pb-6 pt-0 gap-3 flex-wrap">
+        <Link href={`/bookmakers/${bookmaker.slug}`} className="flex-1 min-w-[140px]">
           <Button variant="outline" className="w-full" data-testid={`button-review-${bookmaker.slug}`}>
             Read Review
           </Button>
@@ -160,7 +160,7 @@ export function BookmakerCard({ bookmaker, bonus, rank, className }: BookmakerCa
           href={bookmaker.affiliateUrl || "#"} 
           target="_blank" 
           rel="noopener noreferrer" 
-          className="flex-1"
+          className="flex-1 min-w-[140px]"
         >
           <Button className="w-full gap-2" data-testid={`button-visit-${bookmaker.slug}`}>
             Visit Site
