@@ -3,14 +3,69 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Layout } from "@/components/layout";
 import NotFound from "@/pages/not-found";
+import Home from "@/pages/home";
+import BookmakersPage, { 
+  CryptoSportsbooks, 
+  CryptoCasinos, 
+  NoKycBetting,
+  BitcoinSportsbook,
+  EthereumSportsbook,
+  UsdtSportsbook
+} from "@/pages/bookmakers";
+import BookmakerDetail from "@/pages/bookmaker-detail";
+import BonusesPage from "@/pages/bonuses";
+import GuidesPage from "@/pages/guides";
+import GuideDetail from "@/pages/guide-detail";
+import { 
+  HowWeRate, 
+  ResponsibleGambling, 
+  AffiliateDisclosure, 
+  About, 
+  Contact,
+  ComparePage 
+} from "@/pages/static-pages";
+import AdminDashboard from "@/pages/admin";
 
 function Router() {
   return (
     <Switch>
-      {/* Add pages below */}
-      {/* <Route path="/" component={Home}/> */}
-      {/* Fallback to 404 */}
+      <Route path="/" component={Home} />
+      
+      <Route path="/crypto-sportsbooks" component={CryptoSportsbooks} />
+      <Route path="/crypto-casinos" component={CryptoCasinos} />
+      <Route path="/no-kyc-crypto-betting" component={NoKycBetting} />
+      <Route path="/bitcoin-sportsbook" component={BitcoinSportsbook} />
+      <Route path="/ethereum-sportsbook" component={EthereumSportsbook} />
+      <Route path="/usdt-sportsbook" component={UsdtSportsbook} />
+      
+      <Route path="/bookmakers" component={BookmakersPage} />
+      <Route path="/bookmakers/:slug" component={BookmakerDetail} />
+      
+      <Route path="/bonuses" component={BonusesPage} />
+      
+      <Route path="/guides" component={GuidesPage} />
+      <Route path="/guides/:slug" component={GuideDetail} />
+      
+      <Route path="/compare" component={ComparePage} />
+      
+      <Route path="/how-we-rate" component={HowWeRate} />
+      <Route path="/responsible-gambling" component={ResponsibleGambling} />
+      <Route path="/affiliate-disclosure" component={AffiliateDisclosure} />
+      <Route path="/about" component={About} />
+      <Route path="/contact" component={Contact} />
+      
+      <Route component={NotFound} />
+    </Switch>
+  );
+}
+
+function AdminRouter() {
+  return (
+    <Switch>
+      <Route path="/admin" component={AdminDashboard} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -18,12 +73,25 @@ function Router() {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Router />
-      </TooltipProvider>
-    </QueryClientProvider>
+    <ThemeProvider defaultTheme="dark">
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Switch>
+            <Route path="/admin">
+              {() => <AdminRouter />}
+            </Route>
+            <Route>
+              {() => (
+                <Layout>
+                  <Router />
+                </Layout>
+              )}
+            </Route>
+          </Switch>
+          <Toaster />
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }
 
