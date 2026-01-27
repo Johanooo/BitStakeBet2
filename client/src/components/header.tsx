@@ -1,8 +1,9 @@
 import { Link, useLocation } from "wouter";
 import { Menu, X, Shield, Gift, BookOpen, Scale, ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { useTheme } from "@/components/theme-provider";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +22,21 @@ const navigation = [
 export function Header() {
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { theme } = useTheme();
+  const [resolvedTheme, setResolvedTheme] = useState<"dark" | "light">("dark");
+
+  useEffect(() => {
+    if (theme === "system") {
+      const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      setResolvedTheme(isDark ? "dark" : "light");
+    } else {
+      setResolvedTheme(theme);
+    }
+  }, [theme]);
+
+  const logoSrc = resolvedTheme === "dark" 
+    ? "/logos/bitstakebet-logo.png" 
+    : "/logos/bitstakebet-logo-light.png";
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
@@ -28,7 +44,7 @@ export function Header() {
         <nav className="flex h-16 items-center justify-between gap-2">
           <Link href="/" className="flex items-center group" data-testid="link-home">
             <img 
-              src="/logos/bitstakebet-logo.png" 
+              src={logoSrc} 
               alt="BitStakeBet" 
               className="h-14 w-auto object-contain max-w-[200px] sm:max-w-[280px]"
             />

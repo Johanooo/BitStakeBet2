@@ -1,7 +1,25 @@
 import { Link } from "wouter";
 import { Shield, AlertTriangle } from "lucide-react";
+import { useTheme } from "@/components/theme-provider";
+import { useEffect, useState } from "react";
 
 export function Footer() {
+  const { theme } = useTheme();
+  const [resolvedTheme, setResolvedTheme] = useState<"dark" | "light">("dark");
+
+  useEffect(() => {
+    if (theme === "system") {
+      const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      setResolvedTheme(isDark ? "dark" : "light");
+    } else {
+      setResolvedTheme(theme);
+    }
+  }, [theme]);
+
+  const logoSrc = resolvedTheme === "dark" 
+    ? "/logos/bitstakebet-logo.png" 
+    : "/logos/bitstakebet-logo-light.png";
+
   return (
     <footer className="border-t border-border/40 bg-card/50">
       <div className="container mx-auto px-4 py-12">
@@ -9,7 +27,7 @@ export function Footer() {
           <div className="space-y-4">
             <div className="flex items-center">
               <img 
-                src="/logos/bitstakebet-logo.png" 
+                src={logoSrc} 
                 alt="BitStakeBet" 
                 className="h-16 w-auto object-contain max-w-[240px]"
               />
