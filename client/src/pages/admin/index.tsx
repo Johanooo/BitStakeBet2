@@ -113,7 +113,7 @@ export default function AdminDashboard() {
                 <img 
                   src="/logos/bitstakebet-logo.png" 
                   alt="BitStakeBet" 
-                  className="h-8 w-auto object-contain"
+                  className="h-10 w-auto object-contain"
                 />
               </div>
             </Link>

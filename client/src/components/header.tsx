@@ -30,7 +30,7 @@ export function Header() {
             <img 
               src="/logos/bitstakebet-logo.png" 
               alt="BitStakeBet" 
-              className="h-10 w-auto object-contain"
+              className="h-12 sm:h-14 w-auto object-contain"
             />
           </Link>
 
