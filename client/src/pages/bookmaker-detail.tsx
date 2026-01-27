@@ -158,7 +158,7 @@ export default function BookmakerDetail() {
                     href={bookmaker.affiliateUrl || "#"} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="block mt-4 lg:hidden"
+                    className="block mt-4"
                   >
                     <Button className="w-full sm:w-auto gap-2" size="lg" data-testid="button-visit-site-mobile">
                       Visit {bookmaker.name}
