@@ -17,8 +17,8 @@ export function Footer() {
   }, [theme]);
 
   const logoSrc = resolvedTheme === "dark" 
-    ? "/logos/bitstakebet-logo.png" 
-    : "/logos/bitstakebet-logo-light.png";
+    ? "/logos/bitstakebet-logo-light.png" 
+    : "/logos/bitstakebet-logo.png";
 
   return (
     <footer className="border-t border-border/40 bg-card/50">

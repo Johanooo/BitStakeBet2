@@ -35,8 +35,8 @@ export function Header() {
   }, [theme]);
 
   const logoSrc = resolvedTheme === "dark" 
-    ? "/logos/bitstakebet-logo.png" 
-    : "/logos/bitstakebet-logo-light.png";
+    ? "/logos/bitstakebet-logo-light.png" 
+    : "/logos/bitstakebet-logo.png";
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
