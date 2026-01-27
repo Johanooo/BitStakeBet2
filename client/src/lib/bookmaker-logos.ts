@@ -11,6 +11,9 @@ import vaveLogo from "../../../attached_assets/logos/vave.png";
 import bitslerLogo from "../../../attached_assets/logos/bitsler.webp";
 import mystakeLogo from "../../../attached_assets/logos/mystake.png";
 import rakebitLogo from "../../../attached_assets/logos/rakebit.png";
+import betfuryLogo from "../../../attached_assets/logos/betfury.png";
+import duelbitsLogo from "../../../attached_assets/logos/duelbits.png";
+import sportsbetioLogo from "../../../attached_assets/logos/sportsbet-io.png";
 
 export const bookmakerLogos: Record<string, string> = {
   "stake": stakeLogo,
@@ -26,6 +29,9 @@ export const bookmakerLogos: Record<string, string> = {
   "bitsler": bitslerLogo,
   "mystake": mystakeLogo,
   "rakebit": rakebitLogo,
+  "betfury": betfuryLogo,
+  "duelbits": duelbitsLogo,
+  "sportsbet-io": sportsbetioLogo,
 };
 
 export function getBookmakerLogo(slug: string): string | undefined {
