@@ -28,6 +28,7 @@ import {
   ComparePage 
 } from "@/pages/static-pages";
 import AdminDashboard from "@/pages/admin";
+import AdminLogin from "@/pages/admin/login";
 
 function Router() {
   return (
@@ -66,6 +67,7 @@ function AdminRouter() {
   return (
     <Switch>
       <Route path="/admin" component={AdminDashboard} />
+      <Route path="/admin/login" component={AdminLogin} />
       <Route component={NotFound} />
     </Switch>
   );

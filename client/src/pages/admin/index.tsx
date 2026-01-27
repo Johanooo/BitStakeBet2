@@ -1,4 +1,4 @@
-import { useAuth } from "@/hooks/use-auth";
+import { useAdminAuth } from "@/hooks/use-admin-auth";
 import { Link, useLocation } from "wouter";
 import { 
   LayoutDashboard, Building2, Gift, BookOpen, HelpCircle, 
@@ -37,22 +37,15 @@ import { calculateTrustScore } from "@/components/bookmaker-card";
 import { useEffect } from "react";
 
 export default function AdminDashboard() {
-  const { user, isLoading: authLoading, isAuthenticated, logout } = useAuth();
+  const { user, isLoading: authLoading, isAuthenticated, logout, needsSetup } = useAdminAuth();
   const [location, setLocation] = useLocation();
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      toast({
-        title: "Authentication Required",
-        description: "Please log in to access the admin panel.",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 500);
+    if (!authLoading && (!isAuthenticated || needsSetup)) {
+      setLocation("/admin/login");
     }
-  }, [authLoading, isAuthenticated, toast]);
+  }, [authLoading, isAuthenticated, needsSetup, setLocation]);
 
   const { data: bookmakers, isLoading: loadingBookmakers } = useQuery<Bookmaker[]>({
     queryKey: ["/api/bookmakers"],
@@ -128,7 +121,7 @@ export default function AdminDashboard() {
 
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground hidden sm:block">
-              {user?.email || user?.firstName || "Admin"}
+              {user?.username || "Admin"}
             </span>
             <Button variant="outline" size="sm" onClick={() => logout()} className="gap-2">
               <LogOut className="h-4 w-4" />

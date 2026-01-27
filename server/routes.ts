@@ -1,17 +1,170 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth, registerAuthRoutes, isAuthenticated } from "./replit_integrations/auth";
 import { insertBookmakerSchema, insertBonusSchema, insertGuideSchema, insertFaqSchema } from "@shared/schema";
 import { z } from "zod";
+import { 
+  isAdminAuthenticated, 
+  verifyAdminCredentials, 
+  createAdminUser, 
+  getAdminSession,
+  getAllAdminUsers,
+  deleteAdminUser,
+  countAdminUsers,
+  getAdminByUsername
+} from "./admin-auth";
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  // Setup authentication
-  await setupAuth(app);
-  registerAuthRoutes(app);
+  // Admin Authentication Routes
+  
+  // Login
+  app.post("/api/admin/auth/login", async (req, res) => {
+    try {
+      const { username, password } = req.body;
+      if (!username || !password) {
+        return res.status(400).json({ error: "Username and password required" });
+      }
+      
+      const user = await verifyAdminCredentials(username, password);
+      if (!user) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+      
+      req.session.adminUserId = user.id;
+      req.session.adminUsername = user.username;
+      
+      res.json({ 
+        success: true, 
+        user: { id: user.id, username: user.username, role: user.role } 
+      });
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ error: "Login failed" });
+    }
+  });
+
+  // Logout
+  app.post("/api/admin/auth/logout", (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ error: "Logout failed" });
+      }
+      res.json({ success: true });
+    });
+  });
+
+  // Get current session
+  app.get("/api/admin/auth/session", (req, res) => {
+    const session = getAdminSession(req);
+    if (session) {
+      res.json({ authenticated: true, user: session });
+    } else {
+      res.json({ authenticated: false });
+    }
+  });
+
+  // Setup initial admin (only works if no admins exist)
+  app.post("/api/admin/auth/setup", async (req, res) => {
+    try {
+      const count = await countAdminUsers();
+      if (count > 0) {
+        return res.status(403).json({ error: "Admin already exists. Login to create more users." });
+      }
+      
+      const { username, password, email } = req.body;
+      if (!username || !password) {
+        return res.status(400).json({ error: "Username and password required" });
+      }
+      if (password.length < 8) {
+        return res.status(400).json({ error: "Password must be at least 8 characters" });
+      }
+      
+      const user = await createAdminUser(username, password, email);
+      
+      req.session.adminUserId = user.id;
+      req.session.adminUsername = user.username;
+      
+      res.status(201).json({ 
+        success: true, 
+        user: { id: user.id, username: user.username, role: user.role } 
+      });
+    } catch (error: any) {
+      if (error?.code === "23505") {
+        return res.status(400).json({ error: "Username already exists" });
+      }
+      console.error("Setup error:", error);
+      res.status(500).json({ error: "Setup failed" });
+    }
+  });
+
+  // Check if setup is needed
+  app.get("/api/admin/auth/needs-setup", async (req, res) => {
+    try {
+      const count = await countAdminUsers();
+      res.json({ needsSetup: count === 0 });
+    } catch (error) {
+      console.error("Check setup error:", error);
+      res.status(500).json({ error: "Failed to check setup status" });
+    }
+  });
+
+  // Create new admin user (requires auth)
+  app.post("/api/admin/users", isAdminAuthenticated, async (req, res) => {
+    try {
+      const { username, password, email } = req.body;
+      if (!username || !password) {
+        return res.status(400).json({ error: "Username and password required" });
+      }
+      if (password.length < 8) {
+        return res.status(400).json({ error: "Password must be at least 8 characters" });
+      }
+      
+      const existing = await getAdminByUsername(username);
+      if (existing) {
+        return res.status(400).json({ error: "Username already exists" });
+      }
+      
+      const user = await createAdminUser(username, password, email);
+      res.status(201).json({ 
+        id: user.id, 
+        username: user.username, 
+        email: user.email,
+        role: user.role 
+      });
+    } catch (error) {
+      console.error("Create admin error:", error);
+      res.status(500).json({ error: "Failed to create admin user" });
+    }
+  });
+
+  // List admin users (requires auth)
+  app.get("/api/admin/users", isAdminAuthenticated, async (req, res) => {
+    try {
+      const users = await getAllAdminUsers();
+      res.json(users);
+    } catch (error) {
+      console.error("List admins error:", error);
+      res.status(500).json({ error: "Failed to list admin users" });
+    }
+  });
+
+  // Delete admin user (requires auth)
+  app.delete("/api/admin/users/:id", isAdminAuthenticated, async (req, res) => {
+    try {
+      const count = await countAdminUsers();
+      if (count <= 1) {
+        return res.status(400).json({ error: "Cannot delete the last admin user" });
+      }
+      await deleteAdminUser(req.params.id);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Delete admin error:", error);
+      res.status(500).json({ error: "Failed to delete admin user" });
+    }
+  });
 
   // Public API Routes
 
@@ -144,7 +297,7 @@ export async function registerRoutes(
   // Admin API Routes (Protected)
 
   // Admin Bookmakers
-  app.post("/api/admin/bookmakers", isAuthenticated, async (req, res) => {
+  app.post("/api/admin/bookmakers", isAdminAuthenticated, async (req, res) => {
     try {
       const data = insertBookmakerSchema.parse(req.body);
       const bookmaker = await storage.createBookmaker(data);
@@ -158,7 +311,7 @@ export async function registerRoutes(
     }
   });
 
-  app.put("/api/admin/bookmakers/:id", isAuthenticated, async (req, res) => {
+  app.put("/api/admin/bookmakers/:id", isAdminAuthenticated, async (req, res) => {
     try {
       const data = insertBookmakerSchema.partial().parse(req.body);
       const bookmaker = await storage.updateBookmaker(req.params.id, data);
@@ -175,7 +328,7 @@ export async function registerRoutes(
     }
   });
 
-  app.delete("/api/admin/bookmakers/:id", isAuthenticated, async (req, res) => {
+  app.delete("/api/admin/bookmakers/:id", isAdminAuthenticated, async (req, res) => {
     try {
       await storage.deleteBookmaker(req.params.id);
       res.status(204).send();
@@ -186,7 +339,7 @@ export async function registerRoutes(
   });
 
   // Admin Bonuses
-  app.post("/api/admin/bonuses", isAuthenticated, async (req, res) => {
+  app.post("/api/admin/bonuses", isAdminAuthenticated, async (req, res) => {
     try {
       const data = insertBonusSchema.parse(req.body);
       const bonus = await storage.createBonus(data);
@@ -200,7 +353,7 @@ export async function registerRoutes(
     }
   });
 
-  app.put("/api/admin/bonuses/:id", isAuthenticated, async (req, res) => {
+  app.put("/api/admin/bonuses/:id", isAdminAuthenticated, async (req, res) => {
     try {
       const data = insertBonusSchema.partial().parse(req.body);
       const bonus = await storage.updateBonus(req.params.id, data);
@@ -217,7 +370,7 @@ export async function registerRoutes(
     }
   });
 
-  app.delete("/api/admin/bonuses/:id", isAuthenticated, async (req, res) => {
+  app.delete("/api/admin/bonuses/:id", isAdminAuthenticated, async (req, res) => {
     try {
       await storage.deleteBonus(req.params.id);
       res.status(204).send();
@@ -228,7 +381,7 @@ export async function registerRoutes(
   });
 
   // Admin Guides
-  app.get("/api/admin/guides", isAuthenticated, async (req, res) => {
+  app.get("/api/admin/guides", isAdminAuthenticated, async (req, res) => {
     try {
       const guides = await storage.getAllGuides();
       res.json(guides);
@@ -238,7 +391,7 @@ export async function registerRoutes(
     }
   });
 
-  app.post("/api/admin/guides", isAuthenticated, async (req, res) => {
+  app.post("/api/admin/guides", isAdminAuthenticated, async (req, res) => {
     try {
       const data = insertGuideSchema.parse(req.body);
       const guide = await storage.createGuide(data);
@@ -252,7 +405,7 @@ export async function registerRoutes(
     }
   });
 
-  app.put("/api/admin/guides/:id", isAuthenticated, async (req, res) => {
+  app.put("/api/admin/guides/:id", isAdminAuthenticated, async (req, res) => {
     try {
       const data = insertGuideSchema.partial().parse(req.body);
       const guide = await storage.updateGuide(req.params.id, data);
@@ -269,7 +422,7 @@ export async function registerRoutes(
     }
   });
 
-  app.delete("/api/admin/guides/:id", isAuthenticated, async (req, res) => {
+  app.delete("/api/admin/guides/:id", isAdminAuthenticated, async (req, res) => {
     try {
       await storage.deleteGuide(req.params.id);
       res.status(204).send();
@@ -280,7 +433,7 @@ export async function registerRoutes(
   });
 
   // Admin FAQs
-  app.post("/api/admin/faqs", isAuthenticated, async (req, res) => {
+  app.post("/api/admin/faqs", isAdminAuthenticated, async (req, res) => {
     try {
       const data = insertFaqSchema.parse(req.body);
       const faq = await storage.createFaq(data);
@@ -294,7 +447,7 @@ export async function registerRoutes(
     }
   });
 
-  app.put("/api/admin/faqs/:id", isAuthenticated, async (req, res) => {
+  app.put("/api/admin/faqs/:id", isAdminAuthenticated, async (req, res) => {
     try {
       const data = insertFaqSchema.partial().parse(req.body);
       const faq = await storage.updateFaq(req.params.id, data);
@@ -311,7 +464,7 @@ export async function registerRoutes(
     }
   });
 
-  app.delete("/api/admin/faqs/:id", isAuthenticated, async (req, res) => {
+  app.delete("/api/admin/faqs/:id", isAdminAuthenticated, async (req, res) => {
     try {
       await storage.deleteFaq(req.params.id);
       res.status(204).send();

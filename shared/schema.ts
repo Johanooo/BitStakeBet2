@@ -167,6 +167,23 @@ export const insertSeoMetadataSchema = createInsertSchema(seoMetadata).omit({ id
 export type InsertSeoMetadata = z.infer<typeof insertSeoMetadataSchema>;
 export type SeoMetadata = typeof seoMetadata.$inferSelect;
 
+// Admin Users table (for traditional username/password auth)
+export const adminUsers = pgTable("admin_users", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  username: text("username").notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
+  email: text("email"),
+  role: text("role").default("admin"),
+  createdAt: timestamp("created_at").defaultNow(),
+  lastLoginAt: timestamp("last_login_at"),
+});
+
+export const insertAdminUserSchema = createInsertSchema(adminUsers).omit({ id: true, createdAt: true, lastLoginAt: true, passwordHash: true }).extend({
+  password: z.string().min(8, "Password must be at least 8 characters"),
+});
+export type InsertAdminUser = z.infer<typeof insertAdminUserSchema>;
+export type AdminUser = typeof adminUsers.$inferSelect;
+
 // Relations
 export const bookmakerRelations = relations(bookmakers, ({ many }) => ({
   bonuses: many(bonuses),
