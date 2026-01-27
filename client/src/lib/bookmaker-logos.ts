@@ -21,9 +21,6 @@ import sportbetOneLogo from "../../../attached_assets/logos/sportbet-one.png";
 import sevenbitLogo from "../../../attached_assets/logos/7bit.png";
 import betsioLogo from "../../../attached_assets/logos/betsio.png";
 import megadiceLogo from "../../../attached_assets/logos/megadice.png";
-import bitstarzLogo from "../../../attached_assets/logos/bitstarz.png";
-import jackbitLogo from "../../../attached_assets/logos/jackbit.png";
-import cryptorinoLogo from "../../../attached_assets/logos/cryptorino.png";
 
 export const bookmakerLogos: Record<string, string> = {
   "stake": stakeLogo,
@@ -49,9 +46,6 @@ export const bookmakerLogos: Record<string, string> = {
   "7bit": sevenbitLogo,
   "bets-io": betsioLogo,
   "megadice": megadiceLogo,
-  "bitstarz": bitstarzLogo,
-  "jackbit": jackbitLogo,
-  "cryptorino": cryptorinoLogo,
 };
 
 export function getBookmakerLogo(slug: string): string | undefined {
