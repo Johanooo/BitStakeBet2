@@ -14,6 +14,39 @@ import {
   getAdminByUsername
 } from "./admin-auth";
 import { getSession } from "./replit_integrations/auth";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+
+// Setup multer for file uploads
+const logoStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = path.join(process.cwd(), "public", "logos");
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname);
+    cb(null, file.fieldname + "-" + uniqueSuffix + ext);
+  },
+});
+
+const uploadLogo = multer({
+  storage: logoStorage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif|svg|webp/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype) || file.mimetype === "image/svg+xml";
+    if (extname && mimetype) {
+      return cb(null, true);
+    }
+    cb(new Error("Only image files are allowed (jpg, png, gif, svg, webp)"));
+  },
+});
 
 export async function registerRoutes(
   httpServer: Server,
@@ -168,6 +201,65 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Delete admin error:", error);
       res.status(500).json({ error: "Failed to delete admin user" });
+    }
+  });
+
+  // Logo Upload Routes
+  
+  // Upload logo file
+  app.post("/api/admin/upload/logo", isAdminAuthenticated, uploadLogo.single("logo"), (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No file uploaded" });
+      }
+      const logoPath = `/logos/${req.file.filename}`;
+      res.json({ 
+        success: true, 
+        logoPath,
+        filename: req.file.filename,
+        originalName: req.file.originalname
+      });
+    } catch (error: any) {
+      console.error("Logo upload error:", error);
+      res.status(500).json({ error: error.message || "Upload failed" });
+    }
+  });
+
+  // List available logos
+  app.get("/api/admin/logos", isAdminAuthenticated, async (req, res) => {
+    try {
+      const logosDir = path.join(process.cwd(), "public", "logos");
+      if (!fs.existsSync(logosDir)) {
+        return res.json({ logos: [] });
+      }
+      const files = fs.readdirSync(logosDir);
+      const logos = files
+        .filter(f => /\.(jpg|jpeg|png|gif|svg|webp)$/i.test(f))
+        .map(f => ({
+          filename: f,
+          path: `/logos/${f}`,
+        }));
+      res.json({ logos });
+    } catch (error) {
+      console.error("List logos error:", error);
+      res.status(500).json({ error: "Failed to list logos" });
+    }
+  });
+
+  // Delete logo file
+  app.delete("/api/admin/logos/:filename", isAdminAuthenticated, async (req, res) => {
+    try {
+      const filename = req.params.filename;
+      const filePath = path.join(process.cwd(), "public", "logos", filename);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+        res.json({ success: true });
+      } else {
+        res.status(404).json({ error: "File not found" });
+      }
+    } catch (error) {
+      console.error("Delete logo error:", error);
+      res.status(500).json({ error: "Failed to delete logo" });
     }
   });
 

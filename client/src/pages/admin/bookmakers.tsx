@@ -37,11 +37,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { ArrowLeft, Building2, ExternalLink, Plus, Pencil, Trash2 } from "lucide-react";
+import { ArrowLeft, Building2, ExternalLink, Plus, Pencil, Trash2, Upload, Image } from "lucide-react";
 import type { Bookmaker } from "@shared/schema";
 import { TrustScoreBadge } from "@/components/trust-score-badge";
 import { calculateTrustScore } from "@/components/bookmaker-card";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 type KycLevel = "NO_KYC" | "LIGHT_KYC" | "FULL_KYC" | "UNKNOWN";
@@ -57,6 +57,9 @@ function BookmakerForm({
   onClose: () => void;
   isPending: boolean;
 }) {
+  const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const [formData, setFormData] = useState({
     name: bookmaker?.name || "",
     slug: bookmaker?.slug || "",
@@ -74,6 +77,35 @@ function BookmakerForm({
     featured: bookmaker?.featured ?? false,
     trustScoreOverride: bookmaker?.trustScoreOverride?.toString() || "",
   });
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    const formDataUpload = new FormData();
+    formDataUpload.append("logo", file);
+
+    try {
+      const response = await fetch("/api/admin/upload/logo", {
+        method: "POST",
+        body: formDataUpload,
+        credentials: "include",
+      });
+      
+      if (!response.ok) {
+        throw new Error("Upload failed");
+      }
+      
+      const result = await response.json();
+      setFormData({ ...formData, logoPath: result.logoPath });
+      toast({ title: "Logo uploaded successfully" });
+    } catch (error) {
+      toast({ title: "Upload failed", variant: "destructive" });
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -118,14 +150,56 @@ function BookmakerForm({
             data-testid="input-bookmaker-domain"
           />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="logoPath">Logo URL</Label>
-          <Input
-            id="logoPath"
-            value={formData.logoPath}
-            onChange={(e) => setFormData({ ...formData, logoPath: e.target.value })}
-            data-testid="input-bookmaker-logo"
-          />
+        <div className="space-y-2 sm:col-span-2">
+          <Label>Logo</Label>
+          <div className="flex flex-wrap items-center gap-4">
+            {formData.logoPath && (
+              <div className="relative w-16 h-16 rounded border bg-muted flex items-center justify-center overflow-hidden">
+                <img 
+                  src={formData.logoPath} 
+                  alt="Logo preview" 
+                  className="max-w-full max-h-full object-contain"
+                />
+              </div>
+            )}
+            <div className="flex-1 min-w-[200px]">
+              <div className="flex gap-2">
+                <Input
+                  id="logoPath"
+                  value={formData.logoPath}
+                  onChange={(e) => setFormData({ ...formData, logoPath: e.target.value })}
+                  placeholder="/logos/example.png"
+                  data-testid="input-bookmaker-logo"
+                  className="flex-1"
+                />
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                  data-testid="input-logo-file"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading}
+                  data-testid="button-upload-logo"
+                >
+                  {isUploading ? (
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current" />
+                  ) : (
+                    <Upload className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Click upload to add a new logo (PNG, GIF, SVG, WebP)
+              </p>
+            </div>
+          </div>
         </div>
         <div className="space-y-2">
           <Label htmlFor="affiliateUrl">Affiliate URL</Label>
