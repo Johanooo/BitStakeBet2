@@ -29,6 +29,10 @@ import {
 } from "@/pages/static-pages";
 import AdminDashboard from "@/pages/admin";
 import AdminLogin from "@/pages/admin/login";
+import AdminBookmakers from "@/pages/admin/bookmakers";
+import AdminBonuses from "@/pages/admin/bonuses";
+import AdminGuides from "@/pages/admin/guides";
+import AdminFaqs from "@/pages/admin/faqs";
 
 function Router() {
   return (
@@ -70,6 +74,10 @@ function App() {
         <TooltipProvider>
           <Switch>
             <Route path="/admin/login" component={AdminLogin} />
+            <Route path="/admin/bookmakers" component={AdminBookmakers} />
+            <Route path="/admin/bonuses" component={AdminBonuses} />
+            <Route path="/admin/guides" component={AdminGuides} />
+            <Route path="/admin/faqs" component={AdminFaqs} />
             <Route path="/admin" component={AdminDashboard} />
             <Route>
               {() => (
