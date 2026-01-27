@@ -1,0 +1,254 @@
+Build a production-grade website called “CryptoBookies” whose PRIMARY GOAL is to rank #1 for crypto betting keywords and be the most trusted crypto bookmaker comparison site on the internet.
+
+This is a real commercial site. Build it clean, fast, SEO-first, and scalable.
+
+====================================
+CORE STACK (MANDATORY)
+====================================
+- Next.js (App Router) + TypeScript
+- Tailwind CSS + shadcn/ui
+- PostgreSQL + Prisma ORM
+- NextAuth (Google + credentials) for admin
+- Zod + React Hook Form
+- next/image for all images
+- Server Components + caching (ISR)
+- Mobile-first, ultra-fast (Core Web Vitals optimized)
+
+====================================
+SITE PURPOSE
+====================================
+Compare crypto betting sites (sportsbook + casino) by:
+- Trust & safety
+- Bonuses (with verification timestamps)
+- KYC / No-KYC
+- Supported coins
+- Payout speed
+- Region eligibility
+
+The site MUST look premium and authoritative — not spammy.
+
+====================================
+PAGE ARCHITECTURE (SEO-FIRST)
+====================================
+
+Money Pages:
+- /crypto-sportsbooks
+- /crypto-casinos
+- /no-kyc-crypto-betting
+- /bitcoin-sportsbook
+- /usdt-sportsbook
+- /ethereum-sportsbook
+- /crypto-betting-sites/[country]
+
+Directory:
+- /bookmakers
+- /bookmakers/[slug]
+
+Bonuses:
+- /bonuses
+- /bonuses/[type]
+
+Comparisons:
+- /compare
+- /compare/[slugA]-vs-[slugB]
+
+Guides (Topical Authority):
+- /guides
+- /guides/[slug]
+
+Legal / Trust:
+- /how-we-rate
+- /responsible-gambling
+- /affiliate-disclosure
+- /about
+- /contact
+
+====================================
+ADMIN PANEL (REQUIRED)
+====================================
+Route: /admin (protected)
+
+Admin must be able to:
+- Add/edit/delete bookmakers
+- Add/edit/delete bonuses
+- Upload/replace logos
+- Mark bonuses as VERIFIED / UNVERIFIED / EXPIRED
+- Update “lastVerifiedAt” timestamp
+- Edit SEO metadata per page
+- Manage FAQ entries
+- View edit/change logs
+
+====================================
+DATABASE MODELS (PRISMA)
+====================================
+
+Bookmaker:
+- id, name, slug, domain
+- description
+- foundedYear
+- logoPath
+- licenseName, licenseJurisdiction, licenseUrl
+- kycLevel (NO_KYC | LIGHT_KYC | FULL_KYC | UNKNOWN)
+- sportsbook (bool), casino (bool), esports (bool)
+- supportedCoins (relation)
+- restrictedRegions (relation)
+- affiliateUrl, refCode
+- trustManualOverride (optional)
+- createdAt, updatedAt
+
+Bonus:
+- id, bookmakerId
+- type (DEPOSIT_MATCH | FREE_BET | CASHBACK | RAKEBACK | OTHER)
+- headline, description
+- maxValueUsd
+- wageringRequirementText
+- minDepositText
+- expiryText
+- promoCode
+- sourceUrl
+- status (ACTIVE | EXPIRED | UNVERIFIED)
+- lastVerifiedAt
+
+Review:
+- bookmakerId
+- rating (1–5)
+- payoutSpeedRating
+- kycExperienceRating
+- createdAt
+- anti-spam fields (hashes)
+
+Coin, Region tables + join tables
+
+====================================
+RATING SYSTEM (CRITICAL)
+====================================
+
+Compute TWO scores:
+
+1) Trust Score (0–100)
+- License & jurisdiction
+- Age of brand
+- KYC transparency
+- Payout reliability
+- Support responsiveness
+- Complaint flags
+- Manual admin override
+
+2) Bonus Value Score (0–100)
+- Max value normalized
+- Wagering severity penalty
+- Expiry penalty
+- Clarity & verification penalty
+
+DEFAULT SORTING = TRUST SCORE
+
+====================================
+SEO REQUIREMENTS (NON-NEGOTIABLE)
+====================================
+
+Every indexable page MUST include:
+- Unique title & meta description
+- Canonical URL
+- OpenGraph + Twitter cards
+- Schema.org structured data
+
+Implement:
+- ItemList schema for rankings
+- FAQPage schema for FAQs
+- Review schema (aggregate only, compliant)
+- BreadcrumbList schema
+- Organization schema site-wide
+
+SEO SYSTEM:
+- generateMetadata() per route
+- Admin-editable meta fields
+- Auto NOINDEX thin pages
+- sitemap.xml (indexable pages only)
+- robots.txt
+- RSS feed for guides
+- hreflang-ready (EN first)
+
+====================================
+INTERNAL LINKING ENGINE
+====================================
+
+Automatically generate:
+- Related bookmakers
+- Alternatives
+- Best for coin
+- Best no-KYC options
+- Country-eligible options
+
+Use shared tags:
+- coin
+- kyc level
+- sportsbook/casino
+- region
+- bonus type
+
+====================================
+CONTENT & AUTHORITY
+====================================
+
+Seed at least 15 guides explaining:
+- Wagering requirements
+- No-KYC risks
+- Bonus abuse myths
+- Crypto withdrawals
+- Licensing & trust
+- Avoiding scam bookies
+
+Each guide:
+- Human-written tone
+- FAQs
+- Last updated timestamp
+- Internal links
+
+====================================
+LOGOS
+====================================
+- Store locally in /public/logos
+- Script: scripts/fetch_logos.ts
+  - Try Clearbit logo endpoint
+  - Fallback to generated placeholder
+- Admin upload override
+
+====================================
+SEED DATA
+====================================
+Seed 30+ crypto bookmakers including:
+Stake, Cloudbet, BC.Game, Roobet, Rollbit, Sportsbet.io, Duelbits,
+BetFury, 1xBit, Betcoin.ag, Nitrogen Sports, Thunderpick, Gamdom,
+LuckyBlock, Shuffle, DuckDice, CoinsGame, Vave, Bitsler,
+Mystake, Roletto, Winz, Rakebit
+
+Bonuses:
+- Must have sourceUrl + lastVerifiedAt OR be marked UNVERIFIED
+
+====================================
+PERFORMANCE
+====================================
+- Lighthouse target: 95+ Performance, 100 SEO
+- ISR revalidation strategy
+- No layout shift
+- Lazy-load non-critical components
+
+====================================
+COMPLIANCE
+====================================
+- 18+ warning
+- Responsible gambling notice
+- Affiliate disclosure site-wide
+- No misleading claims
+
+====================================
+DELIVERABLE
+====================================
+Return a fully working, deploy-ready app with:
+- Database
+- Admin panel
+- SEO architecture
+- Seed data
+- README with setup steps
+
+BUILD IT NOW.
