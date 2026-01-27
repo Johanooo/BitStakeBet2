@@ -10,8 +10,9 @@ The application follows a full-stack architecture with React frontend, Express b
 - Complete implementation of all pages: Homepage, Sportsbooks, Casinos, Bookmaker Detail, Bonuses, Guides, Static pages
 - Dark crypto-themed design with emerald/green primary color
 - Trust score calculation algorithm with visual badges
-- Database seeded with 24 real crypto bookmakers
-- Admin panel with Replit Auth protection
+- Database seeded with 23 real crypto bookmakers from Bitcoin.com
+- **Replaced Replit Auth with traditional username/password admin authentication**
+- Admin panel secured with custom authentication (bcrypt password hashing)
 - All API endpoints implemented with proper authentication
 
 ## User Preferences
@@ -31,7 +32,7 @@ Preferred communication style: Simple, everyday language.
 ### Backend Architecture
 - **Framework**: Express.js with TypeScript
 - **API Structure**: RESTful endpoints under `/api/` prefix
-- **Authentication**: Replit Auth integration with session-based authentication using Passport.js
+- **Authentication**: Traditional username/password admin authentication with bcrypt hashing
 - **Session Storage**: PostgreSQL-backed sessions via connect-pg-simple
 
 ### Data Layer
@@ -46,7 +47,8 @@ Preferred communication style: Simple, everyday language.
 - **Guides**: Educational content with categories and FAQs
 - **Coins**: Cryptocurrency support (BTC, ETH, USDT, etc.)
 - **Regions**: Geographic restrictions for bookmakers
-- **Users/Sessions**: Authentication tables for Replit Auth
+- **AdminUsers**: Admin accounts with bcrypt-hashed passwords (username, password_hash, email, role)
+- **Sessions**: PostgreSQL-backed session storage
 
 ### Build System
 - **Development**: Vite dev server with HMR, proxied through Express
@@ -60,8 +62,9 @@ Preferred communication style: Simple, everyday language.
 - Drizzle ORM for queries and schema management
 
 ### Authentication
-- Replit Auth (OpenID Connect) for user authentication
+- Traditional username/password authentication with bcrypt password hashing
 - Session management with express-session and connect-pg-simple
+- Admin setup flow: first visitor to /admin/login creates the initial admin account
 
 ### UI/Frontend Libraries
 - Radix UI primitives for accessible components
@@ -72,5 +75,3 @@ Preferred communication style: Simple, everyday language.
 ### Required Environment Variables
 - `DATABASE_URL`: PostgreSQL connection string
 - `SESSION_SECRET`: Secret for session encryption
-- `ISSUER_URL`: OpenID Connect issuer (defaults to Replit)
-- `REPL_ID`: Replit environment identifier
