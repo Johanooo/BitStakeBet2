@@ -64,7 +64,7 @@ export interface IStorage {
 export class DatabaseStorage implements IStorage {
   // Bookmakers
   async getAllBookmakers(): Promise<Bookmaker[]> {
-    return db.select().from(bookmakers).orderBy(desc(bookmakers.featured), desc(bookmakers.trustScoreOverride));
+    return db.select().from(bookmakers).orderBy(asc(bookmakers.sortOrder), desc(bookmakers.trustScoreOverride));
   }
 
   async getBookmakerBySlug(slug: string): Promise<Bookmaker | undefined> {
@@ -97,7 +97,8 @@ export class DatabaseStorage implements IStorage {
 
   async getFeaturedBookmakers(limit = 10): Promise<Bookmaker[]> {
     return db.select().from(bookmakers)
-      .orderBy(desc(bookmakers.featured), desc(bookmakers.trustScoreOverride))
+      .where(eq(bookmakers.featured, true))
+      .orderBy(asc(bookmakers.sortOrder), desc(bookmakers.trustScoreOverride))
       .limit(limit);
   }
 

@@ -40,7 +40,7 @@ export default function BookmakersPage({
   filterCoin = null,
 }: BookmakersPageProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState("trust");
+  const [sortBy, setSortBy] = useState("recommended");
   const [showSportsbook, setShowSportsbook] = useState(filterType === "sportsbook" || filterType === "all");
   const [showCasino, setShowCasino] = useState(filterType === "casino" || filterType === "all");
   const [showNoKyc, setShowNoKyc] = useState(filterKyc === "NO_KYC");
@@ -63,6 +63,8 @@ export default function BookmakersPage({
 
   const sortedBookmakers = [...filteredBookmakers].sort((a, b) => {
     switch (sortBy) {
+      case "recommended":
+        return (a.sortOrder ?? 999) - (b.sortOrder ?? 999);
       case "trust":
         return (b.trustScoreOverride || 50) - (a.trustScoreOverride || 50);
       case "name":
@@ -106,6 +108,7 @@ export default function BookmakersPage({
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="recommended">Recommended</SelectItem>
               <SelectItem value="trust">Trust Score</SelectItem>
               <SelectItem value="name">Name A-Z</SelectItem>
               <SelectItem value="newest">Newest</SelectItem>
@@ -241,7 +244,7 @@ export default function BookmakersPage({
             <BookmakerCard
               key={bookmaker.id}
               bookmaker={bookmaker}
-              rank={sortBy === "trust" ? index + 1 : undefined}
+              rank={sortBy === "recommended" || sortBy === "trust" ? index + 1 : undefined}
             />
           ))}
         </div>

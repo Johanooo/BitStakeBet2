@@ -62,6 +62,7 @@ export const bookmakers = pgTable("bookmakers", {
   pros: text("pros").array(),
   cons: text("cons").array(),
   featured: boolean("featured").default(false),
+  sortOrder: integer("sort_order").default(999),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 }, (table) => [

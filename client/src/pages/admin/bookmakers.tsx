@@ -75,6 +75,7 @@ function BookmakerForm({
     foundedYear: bookmaker?.foundedYear?.toString() || "",
     licenseName: bookmaker?.licenseName || "",
     featured: bookmaker?.featured ?? false,
+    sortOrder: bookmaker?.sortOrder?.toString() || "999",
     trustScoreOverride: bookmaker?.trustScoreOverride?.toString() || "",
   });
 
@@ -111,6 +112,7 @@ function BookmakerForm({
     e.preventDefault();
     onSave({
       ...formData,
+      sortOrder: formData.sortOrder ? parseInt(formData.sortOrder) : 999,
       foundedYear: formData.foundedYear ? parseInt(formData.foundedYear) : null,
       trustScoreOverride: formData.trustScoreOverride ? parseFloat(formData.trustScoreOverride) : null,
     });
@@ -252,6 +254,17 @@ function BookmakerForm({
             value={formData.foundedYear}
             onChange={(e) => setFormData({ ...formData, foundedYear: e.target.value })}
             data-testid="input-founded-year"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="sortOrder">Position (lower = higher on list)</Label>
+          <Input
+            id="sortOrder"
+            type="number"
+            min="1"
+            value={formData.sortOrder}
+            onChange={(e) => setFormData({ ...formData, sortOrder: e.target.value })}
+            data-testid="input-sort-order"
           />
         </div>
         <div className="space-y-2">
@@ -456,6 +469,7 @@ export default function AdminBookmakers() {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead>Pos</TableHead>
                       <TableHead>Name</TableHead>
                       <TableHead>Trust Score</TableHead>
                       <TableHead>KYC</TableHead>
@@ -468,6 +482,7 @@ export default function AdminBookmakers() {
                   <TableBody>
                     {bookmakers?.map((bm) => (
                       <TableRow key={bm.id}>
+                        <TableCell className="text-muted-foreground">{bm.sortOrder ?? 999}</TableCell>
                         <TableCell className="font-medium">{bm.name}</TableCell>
                         <TableCell>
                           <TrustScoreBadge score={calculateTrustScore(bm)} size="sm" showLabel={false} />
