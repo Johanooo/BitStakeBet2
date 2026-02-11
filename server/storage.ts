@@ -10,7 +10,7 @@ import {
   type SeoMetadata, type InsertSeoMetadata,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, desc, asc, ilike, sql } from "drizzle-orm";
+import { eq, and, desc, asc, ilike, sql, gte, lte, gt, lt, ne } from "drizzle-orm";
 
 export interface IStorage {
   // Bookmakers
@@ -19,6 +19,7 @@ export interface IStorage {
   getBookmakerById(id: string): Promise<Bookmaker | undefined>;
   createBookmaker(data: InsertBookmaker): Promise<Bookmaker>;
   updateBookmaker(id: string, data: Partial<InsertBookmaker>): Promise<Bookmaker | undefined>;
+  shiftBookmakerPositions(excludeId: string, oldPosition: number, newPosition: number): Promise<void>;
   deleteBookmaker(id: string): Promise<boolean>;
   getFeaturedBookmakers(limit?: number): Promise<Bookmaker[]>;
   
@@ -88,6 +89,26 @@ export class DatabaseStorage implements IStorage {
       .where(eq(bookmakers.id, id))
       .returning();
     return result;
+  }
+
+  async shiftBookmakerPositions(excludeId: string, oldPosition: number, newPosition: number): Promise<void> {
+    if (newPosition < oldPosition) {
+      await db.update(bookmakers)
+        .set({ sortOrder: sql`${bookmakers.sortOrder} + 1` })
+        .where(and(
+          ne(bookmakers.id, excludeId),
+          gte(bookmakers.sortOrder, newPosition),
+          lt(bookmakers.sortOrder, oldPosition)
+        ));
+    } else if (newPosition > oldPosition) {
+      await db.update(bookmakers)
+        .set({ sortOrder: sql`${bookmakers.sortOrder} - 1` })
+        .where(and(
+          ne(bookmakers.id, excludeId),
+          gt(bookmakers.sortOrder, oldPosition),
+          lte(bookmakers.sortOrder, newPosition)
+        ));
+    }
   }
 
   async deleteBookmaker(id: string): Promise<boolean> {

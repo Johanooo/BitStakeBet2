@@ -449,6 +449,14 @@ export async function registerRoutes(
   app.put("/api/admin/bookmakers/:id", isAdminAuthenticated, async (req, res) => {
     try {
       const data = insertBookmakerSchema.partial().parse(req.body);
+      
+      if (data.sortOrder !== undefined) {
+        const existing = await storage.getBookmakerById(req.params.id);
+        if (existing && existing.sortOrder !== data.sortOrder) {
+          await storage.shiftBookmakerPositions(req.params.id, existing.sortOrder, data.sortOrder);
+        }
+      }
+      
       const bookmaker = await storage.updateBookmaker(req.params.id, data);
       if (!bookmaker) {
         return res.status(404).json({ error: "Bookmaker not found" });
