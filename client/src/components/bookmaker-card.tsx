@@ -159,7 +159,7 @@ export function BookmakerCard({ bookmaker, bonus, rank, className }: BookmakerCa
         <Button 
           className="flex-1 min-w-[140px] gap-2" 
           data-testid={`button-visit-${bookmaker.slug}`}
-          onClick={() => window.open(bookmaker.affiliateUrl || `https://${bookmaker.domain}`, '_blank')}
+          onClick={() => window.open(`/go/${bookmaker.slug}`, '_blank')}
         >
           Visit Site
           <ExternalLink className="h-4 w-4" />

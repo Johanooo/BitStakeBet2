@@ -161,7 +161,7 @@ export function BonusCard({ bonus, className }: BonusCardProps) {
         <Button 
           className="w-full gap-2 flex-1" 
           data-testid={`button-claim-bonus-${bonus.id}`}
-          onClick={() => window.open(bonus.bookmaker?.affiliateUrl || `https://${bonus.bookmaker?.domain}`, '_blank')}
+          onClick={() => window.open(`/go/${bonus.bookmaker?.slug}`, '_blank')}
         >
           Claim Bonus
           <ExternalLink className="h-4 w-4" />

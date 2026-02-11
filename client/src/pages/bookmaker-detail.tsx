@@ -92,11 +92,10 @@ export default function BookmakerDetail() {
   const logoUrl = getBookmakerLogo(bookmaker.slug) || bookmaker.logoPath;
 
   const copyAffiliateLink = () => {
-    if (bookmaker.affiliateUrl) {
-      navigator.clipboard.writeText(bookmaker.affiliateUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
+    const shortLink = `${window.location.origin}/go/${bookmaker.slug}`;
+    navigator.clipboard.writeText(shortLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -158,7 +157,7 @@ export default function BookmakerDetail() {
                     className="w-full sm:w-auto gap-2 mt-4" 
                     size="lg" 
                     data-testid="button-visit-site-mobile"
-                    onClick={() => window.open(bookmaker.affiliateUrl || `https://${bookmaker.domain}`, '_blank')}
+                    onClick={() => window.open(`/go/${bookmaker.slug}`, '_blank')}
                   >
                     Visit {bookmaker.name}
                     <ExternalLink className="h-4 w-4" />
@@ -341,7 +340,7 @@ export default function BookmakerDetail() {
                   className="w-full gap-2" 
                   size="lg" 
                   data-testid="button-visit-site"
-                  onClick={() => window.open(bookmaker.affiliateUrl || `https://${bookmaker.domain}`, '_blank')}
+                  onClick={() => window.open(`/go/${bookmaker.slug}`, '_blank')}
                 >
                   Visit {bookmaker.name}
                   <ExternalLink className="h-4 w-4" />

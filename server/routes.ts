@@ -286,6 +286,21 @@ export async function registerRoutes(
     }
   });
 
+  // Short affiliate redirect
+  app.get("/go/:slug", async (req, res) => {
+    try {
+      const bookmaker = await storage.getBookmakerBySlug(req.params.slug);
+      if (!bookmaker) {
+        return res.status(404).redirect("/");
+      }
+      const targetUrl = bookmaker.affiliateUrl || `https://${bookmaker.domain}`;
+      res.redirect(302, targetUrl);
+    } catch (error) {
+      console.error("Redirect error:", error);
+      res.redirect("/");
+    }
+  });
+
   // Public API Routes
 
   // Bookmakers
