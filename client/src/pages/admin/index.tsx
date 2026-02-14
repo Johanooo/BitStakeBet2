@@ -294,6 +294,20 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
           </Link>
+
+          <Link href="/admin/settings">
+            <Card className="hover-elevate cursor-pointer transition-all">
+              <CardContent className="p-6 flex items-center gap-4">
+                <div className="h-12 w-12 rounded-xl bg-gray-500/10 text-gray-500 flex items-center justify-center">
+                  <Settings className="h-6 w-6" />
+                </div>
+                <div>
+                  <p className="font-semibold">Settings</p>
+                  <p className="text-sm text-muted-foreground">Password & email</p>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
       </main>
     </div>

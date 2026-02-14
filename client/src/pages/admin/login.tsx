@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Lock, User, Mail, Shield } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
+import { Lock, User, Mail, Shield, ArrowLeft } from "lucide-react";
 
 export default function AdminLogin() {
   const { login, setup, isLoggingIn, isSettingUp, needsSetup, isLoading, isAuthenticated } = useAdminAuth();
@@ -16,6 +17,10 @@ export default function AdminLogin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotSending, setForgotSending] = useState(false);
+  const [forgotSent, setForgotSent] = useState(false);
   
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
@@ -149,9 +154,95 @@ export default function AdminLogin() {
                 needsSetup ? "Create Admin Account" : "Login"
               )}
             </Button>
+            
+            {!needsSetup && (
+              <Button
+                type="button"
+                variant="ghost"
+                className="w-full text-muted-foreground"
+                onClick={() => setShowForgotPassword(true)}
+                data-testid="button-forgot-password"
+              >
+                Forgot password?
+              </Button>
+            )}
           </form>
         </CardContent>
       </Card>
+
+      {showForgotPassword && (
+        <Card className="w-full max-w-md mt-4">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Mail className="h-5 w-5" />
+              Reset Password
+            </CardTitle>
+            <CardDescription>
+              Enter your admin email address and we'll send you a reset link
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {forgotSent ? (
+              <div className="text-center space-y-3">
+                <p className="text-sm text-muted-foreground">
+                  If an account with that email exists, a reset link has been sent. Check your inbox.
+                </p>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => { setShowForgotPassword(false); setForgotSent(false); setForgotEmail(""); }}
+                  data-testid="button-back-to-login"
+                >
+                  Back to Login
+                </Button>
+              </div>
+            ) : (
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                setForgotSending(true);
+                try {
+                  await apiRequest("POST", "/api/admin/auth/forgot-password", { email: forgotEmail });
+                  setForgotSent(true);
+                } catch (error) {
+                  toast({ title: "Error", description: "Something went wrong. Please try again.", variant: "destructive" });
+                }
+                setForgotSending(false);
+              }} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="forgotEmail">Email address</Label>
+                  <Input
+                    id="forgotEmail"
+                    type="email"
+                    value={forgotEmail}
+                    onChange={(e) => setForgotEmail(e.target.value)}
+                    placeholder="your@email.com"
+                    required
+                    data-testid="input-forgot-email"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Button 
+                    type="submit" 
+                    disabled={forgotSending}
+                    className="flex-1"
+                    data-testid="button-send-reset"
+                  >
+                    {forgotSending ? "Sending..." : "Send Reset Link"}
+                  </Button>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={() => setShowForgotPassword(false)}
+                    data-testid="button-cancel-forgot"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            )}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

@@ -35,6 +35,8 @@ import AdminBookmakers from "@/pages/admin/bookmakers";
 import AdminBonuses from "@/pages/admin/bonuses";
 import AdminGuides from "@/pages/admin/guides";
 import AdminFaqs from "@/pages/admin/faqs";
+import AdminSettings from "@/pages/admin/settings";
+import AdminResetPassword from "@/pages/admin/reset-password";
 
 function Router() {
   return (
@@ -78,10 +80,12 @@ function App() {
         <TooltipProvider>
           <Switch>
             <Route path="/admin/login" component={AdminLogin} />
+            <Route path="/admin/reset-password" component={AdminResetPassword} />
             <Route path="/admin/bookmakers" component={AdminBookmakers} />
             <Route path="/admin/bonuses" component={AdminBonuses} />
             <Route path="/admin/guides" component={AdminGuides} />
             <Route path="/admin/faqs" component={AdminFaqs} />
+            <Route path="/admin/settings" component={AdminSettings} />
             <Route path="/admin" component={AdminDashboard} />
             <Route>
               {() => (

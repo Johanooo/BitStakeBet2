@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import { db } from "./db";
-import { adminUsers } from "@shared/schema";
-import { eq } from "drizzle-orm";
+import { adminUsers, passwordResetTokens } from "@shared/schema";
+import { eq, and, gt } from "drizzle-orm";
 
 declare module "express-session" {
   interface SessionData {
@@ -74,4 +75,61 @@ export function getAdminSession(req: Request) {
     };
   }
   return null;
+}
+
+export async function getAdminById(id: string) {
+  const [user] = await db.select().from(adminUsers).where(eq(adminUsers.id, id));
+  return user || null;
+}
+
+export async function changeAdminPassword(userId: string, currentPassword: string, newPassword: string) {
+  const user = await getAdminById(userId);
+  if (!user) return { success: false, error: "User not found" };
+
+  const isValid = await bcrypt.compare(currentPassword, user.passwordHash);
+  if (!isValid) return { success: false, error: "Current password is incorrect" };
+
+  const newHash = await bcrypt.hash(newPassword, 10);
+  await db.update(adminUsers).set({ passwordHash: newHash }).where(eq(adminUsers.id, userId));
+  return { success: true };
+}
+
+export async function updateAdminEmail(userId: string, email: string) {
+  const [updated] = await db.update(adminUsers).set({ email }).where(eq(adminUsers.id, userId)).returning();
+  return updated;
+}
+
+export async function createPasswordResetToken(email: string) {
+  const [user] = await db.select().from(adminUsers).where(eq(adminUsers.email, email));
+  if (!user) return null;
+
+  const token = crypto.randomBytes(32).toString("hex");
+  const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+
+  await db.insert(passwordResetTokens).values({
+    userId: user.id,
+    token,
+    expiresAt,
+  });
+
+  return { token, user };
+}
+
+export async function resetPasswordWithToken(token: string, newPassword: string) {
+  const [resetToken] = await db.select().from(passwordResetTokens).where(
+    and(
+      eq(passwordResetTokens.token, token),
+      gt(passwordResetTokens.expiresAt, new Date())
+    )
+  );
+
+  if (!resetToken || resetToken.usedAt) {
+    return { success: false, error: "Invalid or expired reset link" };
+  }
+
+  const newHash = await bcrypt.hash(newPassword, 10);
+  await db.update(adminUsers).set({ passwordHash: newHash }).where(eq(adminUsers.id, resetToken.userId));
+  await db.update(passwordResetTokens).set({ usedAt: new Date() }).where(eq(passwordResetTokens.id, resetToken.id));
+
+  return { success: true };
 }

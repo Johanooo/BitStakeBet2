@@ -11,8 +11,15 @@ import {
   getAllAdminUsers,
   deleteAdminUser,
   countAdminUsers,
-  getAdminByUsername
+  getAdminByUsername,
+  getAdminById,
+  changeAdminPassword,
+  updateAdminEmail,
+  createPasswordResetToken,
+  resetPasswordWithToken
 } from "./admin-auth";
+import { changePasswordSchema, resetPasswordSchema } from "@shared/schema";
+import { Resend } from "resend";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import multer from "multer";
@@ -169,6 +176,109 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Check setup error:", error);
       res.status(500).json({ error: "Failed to check setup status" });
+    }
+  });
+
+  // Change password (requires auth)
+  app.post("/api/admin/auth/change-password", isAdminAuthenticated, async (req, res) => {
+    try {
+      const data = changePasswordSchema.parse(req.body);
+      const result = await changeAdminPassword(req.session.adminUserId!, data.currentPassword, data.newPassword);
+      if (!result.success) {
+        return res.status(400).json({ error: result.error });
+      }
+      res.json({ success: true });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid data", details: error.errors });
+      }
+      console.error("Change password error:", error);
+      res.status(500).json({ error: "Failed to change password" });
+    }
+  });
+
+  // Update email (requires auth)
+  app.put("/api/admin/auth/email", isAdminAuthenticated, async (req, res) => {
+    try {
+      const { email } = req.body;
+      if (!email || !email.includes("@")) {
+        return res.status(400).json({ error: "Valid email required" });
+      }
+      const updated = await updateAdminEmail(req.session.adminUserId!, email);
+      res.json({ success: true, email: updated.email });
+    } catch (error) {
+      console.error("Update email error:", error);
+      res.status(500).json({ error: "Failed to update email" });
+    }
+  });
+
+  // Get current admin profile (requires auth)
+  app.get("/api/admin/auth/profile", isAdminAuthenticated, async (req, res) => {
+    try {
+      const user = await getAdminById(req.session.adminUserId!);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      res.json({ id: user.id, username: user.username, email: user.email, role: user.role });
+    } catch (error) {
+      console.error("Get profile error:", error);
+      res.status(500).json({ error: "Failed to get profile" });
+    }
+  });
+
+  // Forgot password (public)
+  app.post("/api/admin/auth/forgot-password", async (req, res) => {
+    try {
+      const { email } = req.body;
+      if (!email) {
+        return res.status(400).json({ error: "Email is required" });
+      }
+
+      const result = await createPasswordResetToken(email);
+      
+      if (result && process.env.RESEND_API_KEY) {
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        const baseUrl = req.headers.origin || `${req.protocol}://${req.get("host")}`;
+        const resetUrl = `${baseUrl}/admin/reset-password?token=${result.token}`;
+        
+        await resend.emails.send({
+          from: process.env.RESEND_FROM_EMAIL || "BitStakeBet <noreply@bitstakebet.com>",
+          to: email,
+          subject: "Reset your BitStakeBet admin password",
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+              <h2 style="color: #10b981;">BitStakeBet Admin</h2>
+              <p>Hi ${result.user.username},</p>
+              <p>You requested a password reset. Click the button below to set a new password:</p>
+              <a href="${resetUrl}" style="display: inline-block; background: #10b981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 20px 0;">Reset Password</a>
+              <p style="color: #666; font-size: 14px;">This link expires in 1 hour. If you didn't request this, you can ignore this email.</p>
+            </div>
+          `,
+        });
+      }
+
+      res.json({ success: true, message: "If an account with that email exists, a reset link has been sent." });
+    } catch (error) {
+      console.error("Forgot password error:", error);
+      res.json({ success: true, message: "If an account with that email exists, a reset link has been sent." });
+    }
+  });
+
+  // Reset password with token (public)
+  app.post("/api/admin/auth/reset-password", async (req, res) => {
+    try {
+      const data = resetPasswordSchema.parse(req.body);
+      const result = await resetPasswordWithToken(data.token, data.newPassword);
+      if (!result.success) {
+        return res.status(400).json({ error: result.error });
+      }
+      res.json({ success: true });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid data", details: error.errors });
+      }
+      console.error("Reset password error:", error);
+      res.status(500).json({ error: "Failed to reset password" });
     }
   });
 
